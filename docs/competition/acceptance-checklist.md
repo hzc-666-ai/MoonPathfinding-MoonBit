@@ -63,11 +63,11 @@
 - visualize/ (ASCII + HTML): ~90 lines
 - cmd/main/ (CLI): ~60 lines
 - Tests: ~661 lines across all modules
-- Total: ~2,351 lines
+- Total: ~2,351 lines (1,690 source + 661 tests), 18 commits
 
 ## Competition Submission
 
-- [ ] GitHub repository pushed
-- [ ] GitLink mirror pushed
-- [ ] 10-20 meaningful commits
-- [ ] Project proposal PDF generated
+- [x] GitHub repository pushed (18 commits)
+- [x] GitLink mirror pushed
+- [x] 10-20 meaningful commits (18 total)
+- [x] Project proposal PDF generated
