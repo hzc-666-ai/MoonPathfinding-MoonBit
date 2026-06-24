@@ -2,7 +2,7 @@
 
 A comprehensive pathfinding library for MoonBit, featuring **9 algorithms**, **5 graph types**, **maze generators**, and **ASCII/HTML visualization**.
 
-[![CI](https://github.com/hzc-666-ai/MoonPathfinding-MoonBit-/actions/workflows/ci.yml/badge.svg)](https://github.com/hzc-666-ai/MoonPathfinding-MoonBit-/actions/workflows/ci.yml)
+[![CI](https://github.com/hzc-666-ai/MoonPathfinding-MoonBit/actions/workflows/ci.yml/badge.svg)](https://github.com/hzc-666-ai/MoonPathfinding-MoonBit/actions/workflows/ci.yml)
 
 ## Features
 
@@ -169,6 +169,6 @@ MIT
 
 ## Links
 
-- GitHub: https://github.com/hzc-666-ai/MoonPathfinding-MoonBit-
+- GitHub: https://github.com/hzc-666-ai/MoonPathfinding-MoonBit
 - GitLink: https://gitlink.org.cn/hzc666/moonpathfinding
 - MoonBit 2026 Open Source Competition

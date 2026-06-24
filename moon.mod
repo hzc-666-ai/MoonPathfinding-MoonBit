@@ -4,7 +4,7 @@ version = "0.1.0"
 
 readme = "README.mbt.md"
 
-repository = "https://github.com/hzc666/moonpathfinding"
+repository = "https://github.com/hzc-666-ai/MoonPathfinding-MoonBit"
 
 license = "MIT"
 

@@ -29,11 +29,11 @@ class PDF(FPDF):
         pass
 
     def title_line(self):
-        self.set_fill_color(27, 67, 50)
+        self.set_fill_color(50, 50, 50)
         self.rect(self.l_margin, self.get_y(), self.w - self.l_margin - self.r_margin, 2, style="F")
         self.ln(4)
         self.set_font("F", "B", 16)
-        self.set_text_color(27, 67, 50)
+        self.set_text_color(50, 50, 50)
         self.cell(0, 7, "MoonPathfinding 项目申报书", align="C", new_x="LMARGIN", new_y="NEXT")
         self.set_font("F", "", 8)
         self.set_text_color(130, 120, 105)
@@ -43,9 +43,9 @@ class PDF(FPDF):
     def sec(self, num, title):
         self.ln(1)
         self.set_font("F", "B", 10)
-        self.set_text_color(27, 67, 50)
+        self.set_text_color(50, 50, 50)
         self.cell(0, 5, f"{num}、{title}", new_x="LMARGIN", new_y="NEXT")
-        self.set_draw_color(27, 67, 50)
+        self.set_draw_color(50, 50, 50)
         self.set_line_width(0.2)
         self.line(self.l_margin, self.get_y(), self.w - self.r_margin, self.get_y())
         self.ln(1.5)
@@ -71,11 +71,11 @@ class PDF(FPDF):
 
     def sub(self, title):
         self.set_font("F", "B", 8)
-        self.set_text_color(27, 67, 50)
+        self.set_text_color(50, 50, 50)
         self.cell(0, 4.5, title, new_x="LMARGIN", new_y="NEXT")
 
     def t_header(self, cells, widths):
-        self.set_fill_color(27, 67, 50)
+        self.set_fill_color(50, 50, 50)
         self.set_text_color(255, 255, 255)
         self.set_font("F", "B", 7)
         h = 5
@@ -87,7 +87,7 @@ class PDF(FPDF):
 
     def t_row(self, cells, widths, bold=False):
         if bold:
-            self.set_fill_color(248, 245, 236)
+            self.set_fill_color(235, 235, 235)
             self.set_font("F", "B", 7)
         else:
             self.set_fill_color(255, 255, 255)
@@ -110,7 +110,7 @@ pdf.title_line()
 # ===== 一 =====
 pdf.sec("一", "基本信息")
 pdf.info("项目名称", "MoonPathfinding：MoonBit 路径查找算法库")
-pdf.info("GitHub", "https://github.com/hzc666/moonpathfinding")
+pdf.info("GitHub", "https://github.com/hzc-666-ai/MoonPathfinding-MoonBit")
 pdf.info("GitLink", "https://gitlink.org.cn/hzc666/moonpathfinding")
 pdf.info("项目方向", "MoonBit 基础库 / 图算法与路径规划")
 pdf.info("移植参考", "原创设计，参考 A*/JPS/Dijkstra 等经典算法｜许可证：MIT")

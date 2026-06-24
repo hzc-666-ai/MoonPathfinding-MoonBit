@@ -5,7 +5,7 @@
 | 项目 | 内容 |
 |------|------|
 | **项目名称** | MoonPathfinding：MoonBit 路径查找算法库 |
-| **GitHub 仓库** | https://github.com/hzc666/moonpathfinding |
+| **GitHub 仓库** | https://github.com/hzc-666-ai/MoonPathfinding-MoonBit |
 | **GitLink 仓库** | https://gitlink.org.cn/hzc666/moonpathfinding |
 | **项目方向** | MoonBit 基础库 / 图算法与路径规划 |
 | **是否为移植项目** | 原创设计，参考 A*、JPS 等经典算法伪代码 |
