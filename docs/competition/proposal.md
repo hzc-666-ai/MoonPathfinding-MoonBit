@@ -1,109 +1,25 @@
 # MoonPathfinding 项目申报书
 
-## 基本信息
-
 | 项目 | 内容 |
-|------|------|
-| **项目名称** | MoonPathfinding：MoonBit 路径查找算法库 |
-| **GitHub 仓库** | https://github.com/hzc-666-ai/MoonPathfinding-MoonBit |
-| **GitLink 仓库** | https://gitlink.org.cn/hzc666/moonpathfinding |
-| **项目方向** | MoonBit 基础库 / 图算法与路径规划 |
-| **是否为移植项目** | 原创设计，参考 A*、JPS 等经典算法伪代码 |
-| **许可证** | MIT |
+|---|---|
+| 项目名称 | MoonPathfinding：MoonBit 路径查找算法库 |
+| 发布模块 | `hzc-666-ai/moonpathfinding`（版本 `0.1.2`） |
+| GitHub | https://github.com/hzc-666-ai/MoonPathfinding-MoonBit |
+| GitLink | https://gitlink.org.cn/hzc666/moonpathfinding |
+| 项目方向 | MoonBit 基础库 / 图算法与路径规划 |
+| 项目性质 | 原创实现，依据经典算法定义与公开伪代码设计，MIT 许可证 |
 
-## 项目简介
+## 项目简介与场景
+MoonPathfinding 是纯 MoonBit 实现的路径查找库，面向游戏寻路、网格路径规划、加权图路线计算和算法教学。项目提供 9 种搜索算法、Graph trait 与 4 种具体图结构、3 种迷宫生成器、路径处理工具、Benchmark 及 ASCII/HTML 可视化。
 
-MoonPathfinding 是一个**纯 MoonBit 实现**的路径查找算法库，提供 **9 种算法**、**5 种图类型**、**迷宫生成器**和 **ASCII/HTML 可视化**。
+## 核心功能
+- 8 种基于 `Graph` trait 的通用算法：BFS、DFS、Dijkstra、A*、Greedy BFS、Bidirectional BFS、Bellman-Ford、IDA*。
+- 1 种 `Grid` 专用算法：JPS，用于八方向、均匀移动代价网格的跳点剪枝搜索。
+- 图抽象：Graph trait、AdjacencyList、Grid、WeightedGrid、HexGrid；路径工具：`smooth_path`、`simplify_path`、`expand_path`、`decimate_path`。
+- Bellman-Ford 支持负权边并检测从起点可达的负环；双向 BFS 支持有向图；Greedy 与 JPS 返回连续路径和完整路径代价。
 
-MoonBit 生态中目前没有路径查找 / 图搜索相关的库。游戏开发、机器人路径规划、地图导航等场景都需要高效的路径查找算法。本项目填补这一生态空白，同时作为 MoonBit 泛型（trait）编程的实践范例。
-
-## 核心功能范围
-
-### 算法模块（9 种算法，约 600 行）
-
-**无信息搜索（4 种）：**
-- BFS：广度优先，无权重图最短路径
-- DFS：深度优先，内存友好
-- Dijkstra：加权图最短路径（非负权）
-- Bellman-Ford：支持负权边，检测负环
-
-**有信息搜索（3 种）：**
-- A*：启发式搜索，f = g + h
-- Greedy BFS：仅用启发函数
-- IDA*：迭代加深 A*，内存高效
-
-**网格优化（2 种）：**
-- Bidirectional BFS：双端同时搜索
-- JPS：跳点搜索，大规模网格上比 A* 快数十倍
-
-所有算法通过统一的 `Graph` trait 实现，**一次编写，适配所有图类型**。
-
-### 图类型（5 种，约 350 行）
-
-- **AdjacencyList**：通用有向/无向图
-- **Grid**：标准 4 方向网格
-- **WeightedGrid**：8 方向 + 地形代价（支持沼泽、道路等）
-- **HexGrid**：六边形网格（odd-q 布局）
-- **Graph trait**：用户可自定义图类型，即插即用
-
-### 迷宫生成器（3 种，约 180 行）
-
-- DFS 递归回溯法（狭长走廊）
-- Prim 算法（多分支短死路）
-- 随机障碍物
-
-### 可视化（约 90 行）
-
-- ASCII 终端渲染（`S`=起点 `E`=终点 `*`=路径 `#`=墙壁）
-- HTML 表格导出（CSS 样式，可直接浏览器查看）
-- 结果摘要（路径长度、代价、访问节点数）
-
-### Benchmark 对比（约 160 行）
-
-- 9 算法在递增规模迷宫上的性能对比
-- 最优性检查（哪些算法找到最短路径）
-- 效率排名（访问节点数最少）
-
-## 差异化价值
-
-| 对比维度 | MoonPathfinding |
-|---------|----------------|
-| 算法数量 | **9 种**，覆盖无信息 + 启发式 + 网格优化 |
-| 图类型 | **5 种**，通用图 + 网格 + 六边形 + 加权 |
-| 泛型设计 | 基于 Graph trait，用户可自定义图类型 |
-| 迷宫生成 | 内置 3 种生成器，demo 即开即用 |
-| 可视化 | ASCII + HTML 双输出，答辩演示友好 |
-| 性能对比 | 内置 benchmark，量化各算法优劣 |
-
-## 项目规模
-
-| 模块 | 源码行数 | 测试行数 |
-|------|---------|---------|
-| algo（9 算法 + MinHeap） | 791 | 204 |
-| graph（5 图类型 + trait） | 379 | 272 |
-| maze（3 生成器） | 181 | 41 |
-| bench（性能对比） | 162 | — |
-| visualize（可视化） | 90 | 15 |
-| cmd/main（CLI demo） | 60 | — |
-| 测试（顶层集成） | — | 129 |
-| 配置/文档 | 27 | — |
-| **合计** | **1,690** | **661** |
-
-项目总计约 **2,351 行**有效代码（含 MoonBit 源码 1,690 行 + 测试 661 行）。62 个测试全部通过，18 次有效提交。
-
-## 实现计划
-
-1. **已完成**：Graph trait + AdjacencyList + Grid，7 种基础算法
-2. **已完成**：JPS、IDA* 扩展，WeightedGrid、HexGrid、迷宫生成器
-3. **已完成**：Benchmark 模块、ASCII/HTML 可视化、CLI demo
-4. **已完成**：62 测试全通过、CI 配置、README
-5. **已完成**：GitHub/GitLink 双仓库推送、18 次有效提交、申报书 PDF 生成
-
-## 适用场景
-
-- **游戏开发**：NPC 寻路、地图导航、AI 移动
-- **机器人路径规划**：网格地图上的最短路径
-- **物流优化**：加权图上的最优配送路线
-- **地图应用**：导航系统中的路径计算
-- **教育教学**：算法可视化演示、对比学习
-- **MoonBit 生态贡献**：填补图算法库空白，示范 trait 泛型编程
+## 实现与交付
+1. 已完成算法、图结构、迷宫、可视化、Benchmark、CLI、README、MIT 许可证和 GitHub/GitLink 双仓库。
+2. MoonBit 源码 2,262 行、测试 757 行，合计 3,019 行；74 个测试在 wasm、wasm-gc、JavaScript、native 四后端通过。
+3. CI 执行 `moon check`、`moon fmt --check`、`moon info`、`moon test`；74 个测试已在四后端验证，当前共 21 次提交。
+4. 已发布 `hzc-666-ai/moonpathfinding@0.1.2`，预期交付物均已完成并可通过 README 命令复现。

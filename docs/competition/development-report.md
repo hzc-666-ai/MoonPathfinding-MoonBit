@@ -1,70 +1,58 @@
 # MoonPathfinding 开发报告
 
+## 项目概述
+
+MoonPathfinding 是一个纯 MoonBit 实现的路径查找算法库，当前发布模块为 `hzc-666-ai/moonpathfinding`，版本为 `0.1.2`。项目包含 9 种搜索算法、Graph trait 与 4 种具体图结构、3 种迷宫生成器、路径处理工具、Benchmark、CLI 以及 ASCII/HTML 可视化。
+
 ## 开发过程
 
-本项目构建了一个纯 MoonBit 实现的路径查找算法库，覆盖经典图搜索算法、高级寻路算法、多种图结构、迷宫生成和路径可视化。
-
-开发分为三个阶段：
-1. **基础架构**：定义 Graph trait 接口、AdjacencyList 图结构、BFS/DFS/Dijkstra/A* 基础算法
-2. **高级算法**：实现 Greedy BFS、Bidirectional BFS、Bellman-Ford、IDA*（迭代加深A*）、JPS（跳点搜索）
-3. **扩展功能**：Grid/HexGrid/WeightedGrid 多种网格、迷宫生成（DFS/Prim）、可视化输出、性能基准测试
+1. **基础架构**：定义 `Graph` trait、`PathResult` 和 AdjacencyList/Grid，实现 BFS、DFS、Dijkstra、A*。
+2. **算法扩展**：实现 Greedy BFS、Bidirectional BFS、Bellman-Ford、IDA* 和面向 Grid 的 JPS。
+3. **工程扩展**：增加 WeightedGrid、HexGrid、DFS/Prim/随机障碍迷宫、可视化、Benchmark 和 CLI。
+4. **正确性加固**：修复 Bellman-Ford 负权路径与可达负环检测、有向图双向 BFS、Greedy 完整路径代价、JPS 连续路径和 10/14 代价计算，并实现路径平滑、简化、展开与抽稀工具。
 
 ## 架构设计
 
-```
-Graph trait (接口抽象)
-  ├── AdjacencyList (通用图)
-  ├── Grid (二维网格)
-  ├── HexGrid (六边形网格)
-  └── WeightedGrid (带权网格)
+```text
+Graph trait
+  ├── AdjacencyList（通用有向/无向图）
+  ├── Grid（二维网格）
+  ├── WeightedGrid（带权八方向网格）
+  └── HexGrid（六边形网格）
 
-算法层 (algo/)
-  ├── 基础：BFS, DFS, Dijkstra, A*, Greedy BFS
-  ├── 高级：Bidirectional BFS, Bellman-Ford, IDA*, JPS
-  └── 扩展：Theta* (视线优化)
-
-可视化 (visualize/) → ANSI/Unicode 网格渲染
-迷宫 (maze/) → DFS/Prim 迷宫生成 + 随机障碍
-基准 (bench/) → 算法性能对比
+algo/
+  ├── 8 种通用 Graph 算法：BFS、DFS、Dijkstra、A*、Greedy、Bidirectional BFS、Bellman-Ford、IDA*
+  ├── Grid 专用算法：JPS
+  └── 路径工具：smooth_path、simplify_path、expand_path、decimate_path
 ```
 
-所有算法通过 Graph trait 实现泛型化，同一套算法代码可运行在不同图结构上。
+这种边界避免把 JPS 错误描述为适用于任意图结构：通用算法通过 `Graph` trait 获取邻接关系和边权，JPS 则依赖规则网格坐标、八方向移动和均匀基础代价。
 
-## 技术难点
+## 核心实现与修复
 
-### 1. MoonBit Trait 约束与泛型
-MoonBit 的 trait 系统需要显式声明类型约束。算法函数签名 `pub fn[G : @graph.Graph] astar(graph : G, start : Int, goal : Int)` 要求在方括号中声明类型参数和 trait 约束，与 Rust 的泛型语法略有不同。
+### Bellman-Ford
+实现支持负权边，并只将“从起点可达的负环”视为当前查询失败。测试覆盖负权最短路、可达负环、不可达负环及起点等于终点时的负环检查。
 
-### 2. JPS（跳点搜索）的剪枝逻辑
-JPS 是网格寻路的最优算法，核心在于识别"跳点"（jump points）以避免展开所有格子。实现难点在于方向性剪枝规则的编码，以及对角线方向的自然邻居（natural neighbors）和强制邻居（forced neighbors）的识别逻辑。
+### Bidirectional BFS
+前向搜索使用原图邻接边，反向搜索按入边扩展，因此可用于有向图。测试验证方向约束、最短相遇路径和不可达场景。
 
-### 3. IDA* 的迭代加深
-IDA* 使用深度优先搜索 + 递增阈值，避免 A* 的内存爆炸问题。阈值更新的 `next_bound` 计算需要正确处理 `f > bound` 的情况，取最小值作为下一个迭代的阈值。
+### Greedy BFS
+启发函数仍决定节点选择顺序，但结果代价按最终选中路径的每条边累加，不再用启发值代替真实路径成本。
 
-### 4. 六边形网格坐标系统
-HexGrid 使用立方体坐标（axial/cube coordinates），邻居计算与矩形网格完全不同。6 个邻居方向的坐标偏移需要根据列索引的奇偶性确定。
+### JPS 与路径工具
+JPS 用于八方向均匀代价 Grid，通过跳点剪枝减少部分规则网格上的扩展节点；实现会将跳点段展开为相邻格点，确保路径连续，并按直线 10、对角线 14 计算完整代价。路径工具提供视线平滑、共线简化、路径展开和按距离抽稀，但不宣称实现 NavMesh Funnel 等未包含算法。
 
-### 5. 可视化输出的跨平台兼容
-visualize 模块输出 ANSI 颜色码和 Unicode 字符（如 ■、□、→），需要在不同终端和操作系统上验证显示效果。
+## 工程质量
 
-## 测试情况
+- MoonBit 源码：2,262 行；测试：757 行；合计：3,019 行。
+- 功能规模：9 种算法，Graph trait + 4 种具体图结构，3 种迷宫生成器。
+- 测试规模：74 个测试，wasm、wasm-gc、JavaScript、native 四后端全部通过。
+- CI 门禁：`moon check`、`moon fmt --check`、`moon info`、`moon test`；Ubuntu 与 macOS job 均通过，四后端测试结果另行完成验证。
+- 仓库历史：21 次提交，GitHub 与 GitLink 默认分支均为 `master`。
 
-- 62 个测试全部通过
-- 覆盖范围：每种算法的基本寻路、无路径情况、起点=终点边界、单点图、大图性能
+## 当前边界与后续方向
 
-## 项目统计
-
-| 指标 | 数值 |
-|------|------|
-| 源码 | 2,172 行 |
-| 算法数 | 10+ 种 |
-| 图结构 | 4 种 |
-| 测试 | 62 |
-| 提交 | 19 |
-
-## 不足与展望
-
-1. 动态图更新（增量重规划如 D* Lite）未实现
-2. 3D 网格/NavMesh 不支持
-3. 多智能体协作寻路（MAPF）未覆盖
-4. 路径平滑（Path Smoothing/Funnel Algorithm）待扩展
+1. 尚未实现 D* Lite 等动态增量重规划算法。
+2. 尚未支持 3D 网格、NavMesh 和 Funnel 路径平滑。
+3. 尚未覆盖多智能体路径规划（MAPF）。
+4. 当前 Benchmark 用于项目内算法对比，不据此宣称跨项目或跨语言的绝对性能优势。

@@ -110,35 +110,33 @@ pdf.title_line()
 # ===== 一 =====
 pdf.sec("一", "基本信息")
 pdf.info("项目名称", "MoonPathfinding：MoonBit 路径查找算法库")
+pdf.info("发布模块", "hzc-666-ai/moonpathfinding @ 0.1.2")
 pdf.info("GitHub", "https://github.com/hzc-666-ai/MoonPathfinding-MoonBit")
 pdf.info("GitLink", "https://gitlink.org.cn/hzc666/moonpathfinding")
-pdf.info("项目方向", "MoonBit 基础库 / 图算法与路径规划")
-pdf.info("移植参考", "原创设计，参考 A*/JPS/Dijkstra 等经典算法｜许可证：MIT")
+pdf.info("方向/性质", "MoonBit 图算法基础库｜原创实现｜MIT 许可证")
 
 # ===== 二 =====
 pdf.sec("二", "项目简介")
 pdf.body(
-    "MoonPathfinding 是一个纯 MoonBit 实现的路径查找算法库，提供 9 种算法、5 种图类型、"
-    "3 种迷宫生成器以及 ASCII/HTML 可视化。"
-    "MoonBit 生态中目前没有路径查找/图搜索相关库，本项目填补空白，"
-    "所有实现纯 MoonBit 代码，零外部依赖，基于 Graph trait 泛型设计，用户可自定义图类型。"
+    "MoonPathfinding 是纯 MoonBit 实现的路径查找算法库，面向游戏寻路、网格路径规划、"
+    "加权图路线计算和算法教学。项目提供 9 种算法、Graph trait 与 4 种具体图结构、"
+    "3 种迷宫生成器、路径工具、Benchmark 以及 ASCII/HTML 可视化。"
 )
 
 # ===== 三 =====
 pdf.sec("三", "核心功能")
 
-pdf.sub("9 种算法（791行）")
+pdf.sub("算法与路径工具（1,160行）")
 for item in [
-    "无信息搜索: BFS(广度优先) / DFS(深度优先) / Dijkstra(加权最短) / Bellman-Ford(支持负权)",
-    "有信息搜索: A*(f=g+h) / Greedy BFS(仅启发) / IDA*(迭代加深, 内存高效)",
-    "网格优化: Bidirectional BFS(双端搜索) / JPS(跳点搜索, 大规模网格上比A*快数十倍)",
+    "8种 Graph 通用算法: BFS / DFS / Dijkstra / Bellman-Ford / A* / Greedy / IDA* / 双向BFS",
+    "Grid专用JPS: 八方向均匀代价网格跳点剪枝 | 路径工具: 平滑 / 简化 / 展开 / 抽稀",
 ]:
     pdf.bullet(item)
 
-pdf.sub("5 种图类型（379行）| 3 种迷宫生成器（181行）| ASCII/HTML 可视化（90行）")
+pdf.sub("图抽象（458行）| 迷宫生成器（180行）| 可视化（123行）")
 for item in [
     "AdjacencyList(通用有向/无向图) | Grid(4方向网格) | WeightedGrid(8方向+地形代价)",
-    "HexGrid(六边形网格 odd-q布局) | Graph trait(用户可自定义图类型, 即插即用)",
+    "HexGrid(六边形网格 odd-q布局) | Graph trait(供8种通用算法扩展图实现)",
     "DFS递归回溯(狭长走廊) | Prim算法(多分支短死路) | 随机障碍物",
     "ASCII终端渲染(S/*/E/#字符画) | HTML表格导出(CSS样式, 可浏览器查看)",
 ]:
@@ -152,42 +150,41 @@ pdf.t_header(["算法", "类型", "最优路径", "加权图", "特点"], [22, 2
 for row in [
     ("BFS", "无信息", "是(无权)", "否", "队列"),
     ("DFS", "无信息", "否", "否", "栈"),
-    ("Dijkstra", "无信息", "是", "是", "优先队列"),
-    ("A*", "有信息", "是", "是", "f=g+h"),
+    ("Dijkstra", "无信息", "非负权", "是", "优先队列"),
+    ("A*", "有信息", "可采纳启发", "是", "f=g+h"),
     ("Greedy BFS", "有信息", "否", "是", "f=h"),
     ("Bidir BFS", "无信息", "是(无权)", "否", "双端"),
-    ("Bellman-Ford", "无信息", "是", "是(含负权)", "DP"),
-    ("IDA*", "有信息", "是", "是", "省内存"),
-    ("JPS", "有信息", "是", "均匀网格", "跳点剪枝"),
+    ("Bellman-Ford", "无信息", "无负环", "是(含负权)", "逐边松弛"),
+    ("IDA*", "有信息", "可采纳启发", "是", "省内存"),
+    ("JPS", "有信息", "适用网格", "均匀网格", "跳点剪枝"),
 ]:
     pdf.t_row(row, [22, 22, 20, 20, 42])
 
 pdf.body(
-    "MoonBit 生态中无等价路径查找库。基于 Graph trait 的泛型设计支持任意图类型，"
-    "5种内置图类型覆盖常见场景，迷宫生成器+可视化让答辩演示直观。"
+    "8种通用算法复用 Graph trait，JPS 保留明确的 Grid 适用边界。"
+    "Bellman-Ford 负权/负环、有向图双向BFS、Greedy完整代价和JPS连续路径均有严格测试。"
 )
 
 # ===== 五 =====
 pdf.sec("五", "项目规模与进度")
 
-pdf.t_header(["模块", "源码行", "测试行", "测试数"], [50, 24, 24, 24])
+pdf.t_header(["模块", "源码行", "测试行"], [76, 25, 25])
 for row in [
-    ("algo (9算法+MinHeap)", "791", "204", "26"),
-    ("graph (5图类型+trait)", "379", "272", "20"),
-    ("maze (3生成器)", "181", "41", "5"),
-    ("bench (性能对比)", "162", "-", "-"),
-    ("visualize (可视化)", "90", "15", "3"),
-    ("cmd/main (CLI)", "60", "-", "-"),
-    ("顶层集成测试", "-", "129", "8"),
-    ("配置/文档", "27", "-", "-"),
-    ("合计", "1,690", "661", "62"),
+    ("algo (9算法+路径工具)", "1,160", "343"),
+    ("graph (trait+4具体图)", "458", "196"),
+    ("maze (3生成器)", "180", "45"),
+    ("bench (性能对比)", "260", "-"),
+    ("visualize (可视化)", "123", "24"),
+    ("cmd/main (CLI)", "63", "-"),
+    ("顶层库/集成测试", "18", "149"),
+    ("合计", "2,262", "757"),
 ]:
-    pdf.t_row(row, [50, 24, 24, 24], bold=(row[0] == "合计"))
+    pdf.t_row(row, [76, 25, 25], bold=(row[0] == "合计"))
 pdf.ln(1)
 
 pdf.body(
-    "总计 2,351 行，62 测试全通过，CI 已配置。已完成全部 9 算法、5 图类型、"
-    "可视化及 Benchmark 模块。"
+    "MoonBit 合计 3,019 行（源码2,262 + 测试757），74个测试在 wasm/wasm-gc/JS/native "
+    "四后端通过；CI 含 check/fmt/info/test，当前21次提交。"
 )
 
 # ===== 六 =====

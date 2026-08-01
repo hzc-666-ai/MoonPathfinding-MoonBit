@@ -15,9 +15,9 @@
 
 ### Additional Algorithms
 - [x] Bidirectional BFS — Shortest-path search on directed and undirected graphs
-- [x] JPS — Jump Point Search (orders of magnitude faster on large grids)
+- [x] JPS — Jump Point Search with jump-point pruning on uniform-cost grids
 
-## Graph Types (5)
+## Graph API (1 trait + 4 implementations)
 
 - [x] AdjacencyList — General directed/undirected graph
 - [x] Grid — 4-direction 2D grid
@@ -69,5 +69,5 @@
 
 - [x] GitHub repository pushed
 - [x] GitLink mirror pushed
-- [x] 10-20 meaningful commits (18 total)
+- [x] 21 meaningful commits
 - [x] Project proposal PDF generated
