@@ -110,7 +110,7 @@ pdf.title_line()
 # ===== 一 =====
 pdf.sec("一", "基本信息")
 pdf.info("项目名称", "MoonPathfinding：MoonBit 路径查找算法库")
-pdf.info("发布模块", "hzc-666-ai/moonpathfinding @ 0.1.2")
+pdf.info("发布模块", "hzc-666-ai/moonpathfinding @ 0.1.3")
 pdf.info("GitHub", "https://github.com/hzc-666-ai/MoonPathfinding-MoonBit")
 pdf.info("GitLink", "https://gitlink.org.cn/hzc666/moonpathfinding")
 pdf.info("方向/性质", "MoonBit 图算法基础库｜原创实现｜MIT 许可证")
@@ -184,7 +184,7 @@ pdf.ln(1)
 
 pdf.body(
     "MoonBit 合计 3,019 行（源码2,262 + 测试757），74个测试在 wasm/wasm-gc/JS/native "
-    "四后端通过；CI 含 check/fmt/info/test，当前21次提交。"
+    "四后端通过；CI 含 check/fmt/info/test，当前23次提交。"
 )
 
 # ===== 六 =====

@@ -2,7 +2,7 @@
 
 ## 项目概述
 
-MoonPathfinding 是一个纯 MoonBit 实现的路径查找算法库，当前发布模块为 `hzc-666-ai/moonpathfinding`，版本为 `0.1.2`。项目包含 9 种搜索算法、Graph trait 与 4 种具体图结构、3 种迷宫生成器、路径处理工具、Benchmark、CLI 以及 ASCII/HTML 可视化。
+MoonPathfinding 是一个纯 MoonBit 实现的路径查找算法库，当前发布模块为 `hzc-666-ai/moonpathfinding`，版本为 `0.1.3`。项目包含 9 种搜索算法、Graph trait 与 4 种具体图结构、3 种迷宫生成器、路径处理工具、Benchmark、CLI 以及 ASCII/HTML 可视化。
 
 ## 开发过程
 
@@ -48,7 +48,7 @@ JPS 用于八方向均匀代价 Grid，通过跳点剪枝减少部分规则网�
 - 功能规模：9 种算法，Graph trait + 4 种具体图结构，3 种迷宫生成器。
 - 测试规模：74 个测试，wasm、wasm-gc、JavaScript、native 四后端全部通过。
 - CI 门禁：`moon check`、`moon fmt --check`、`moon info`、`moon test`；Ubuntu 与 macOS job 均通过，四后端测试结果另行完成验证。
-- 仓库历史：21 次提交，GitHub 与 GitLink 默认分支均为 `master`。
+- 仓库历史：23 次提交，GitHub 与 GitLink 默认分支均为 `master`。
 
 ## 当前边界与后续方向
 
