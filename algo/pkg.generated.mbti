@@ -1,0 +1,46 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "hzc-666-ai/moonpathfinding/algo"
+
+import {
+  "hzc-666-ai/moonpathfinding/graph",
+}
+
+// Values
+pub fn[G : @graph.Graph] astar(G, Int, Int) -> @graph.PathResult
+
+pub fn[G : @graph.Graph] bellman_ford(G, Int, Int) -> @graph.PathResult
+
+pub fn[G : @graph.Graph] bfs(G, Int, Int) -> @graph.PathResult
+
+pub fn[G : @graph.Graph] bidirectional_bfs(G, Int, Int) -> @graph.PathResult
+
+pub fn count_turns(Array[Int]) -> Int
+
+pub fn decimate_path(Array[Int], Int) -> Array[Int]
+
+pub fn[G : @graph.Graph] dfs(G, Int, Int) -> @graph.PathResult
+
+pub fn[G : @graph.Graph] dijkstra(G, Int, Int) -> @graph.PathResult
+
+pub fn expand_path(Array[Int], (Int) -> Array[(Int, Int)]) -> Array[Int]
+
+pub fn[G : @graph.Graph] greedy_bfs(G, Int, Int) -> @graph.PathResult
+
+pub fn[G : @graph.Graph] idastar(G, Int, Int) -> @graph.PathResult
+
+pub fn jps(@graph.Grid, Int, Int) -> @graph.PathResult
+
+pub fn path_length_manhattan(Array[Int], (Int) -> (Int, Int)) -> Int
+
+pub fn simplify_path(Array[Int], (Int) -> Bool) -> Array[Int]
+
+pub fn smooth_path(Array[Int], (Int, Int) -> Bool) -> Array[Int]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

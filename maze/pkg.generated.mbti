@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "hzc-666-ai/moonpathfinding/maze"
+
+// Values
+pub fn dfs_maze(Int, Int, Int) -> Array[String]
+
+pub fn prim_maze(Int, Int, Int) -> Array[String]
+
+pub fn random_obstacles(Int, Int, Int, Int) -> Array[String]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

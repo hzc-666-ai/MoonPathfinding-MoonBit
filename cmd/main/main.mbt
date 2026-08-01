@@ -1,21 +1,22 @@
+///|
 /// CLI demo for MoonPathfinding.
 /// Run: moon run cmd/main
-
 fn main {
-  let lines = [
-    "S....",
-    ".###.",
-    ".....",
-    ".###.",
-    "....E",
-  ]
+  let lines = ["S....", ".###.", ".....", ".###.", "....E"]
   let grid = @graph.Grid::from_strings(lines).unwrap()
   let start = @graph.Grid::pos_to_id(grid, 0, 0)
   let goal = @graph.Grid::pos_to_id(grid, 4, 4)
 
   println("=== MoonPathfinding Demo ===\n")
   println("Grid:")
-  println(@visualize.ascii_render(grid, { path: [], cost: 0, nodes_visited: 0 }, start, goal))
+  println(
+    @visualize.ascii_render(
+      grid,
+      { path: [], cost: 0, nodes_visited: 0 },
+      start,
+      goal,
+    ),
+  )
   println("")
 
   let r_bfs = @algo.bfs(grid, start, goal)
@@ -54,7 +55,9 @@ fn main {
   println("")
 
   // HTML export
-  let html = @visualize.html_render(grid, r_astar, start, goal, "MoonPathfinding — A* Demo")
+  let html = @visualize.html_render(
+    grid, r_astar, start, goal, "MoonPathfinding — A* Demo",
+  )
   println("HTML output (" + html.length().to_string() + " chars):")
   println(html[0:200] + "...")
 }

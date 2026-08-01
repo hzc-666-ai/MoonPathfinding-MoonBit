@@ -1,5 +1,5 @@
+///|
 /// Tests for IDA*.
-
 test "idastar simple graph" {
   let g = @graph.AdjacencyList::new(3)
   g.add_edge(0, 1, 1)
@@ -10,6 +10,7 @@ test "idastar simple graph" {
   assert_eq(r.cost, 3)
 }
 
+///|
 test "idastar start equals goal" {
   let g = @graph.AdjacencyList::new(3)
   let r = @algo.idastar(g, 1, 1)
@@ -17,12 +18,14 @@ test "idastar start equals goal" {
   assert_eq(r.cost, 0)
 }
 
+///|
 test "idastar no path" {
   let g = @graph.AdjacencyList::new(2)
   let r = @algo.idastar(g, 0, 1)
   assert_eq(r.path.length(), 0)
 }
 
+///|
 test "idastar grid same as astar" {
   let cells = Array::make(100, true)
   let g = @graph.Grid::new(10, 10, cells)

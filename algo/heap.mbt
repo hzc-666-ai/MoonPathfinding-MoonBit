@@ -1,17 +1,20 @@
+///|
 /// Binary min-heap storing (priority, cost, node) triples.
-
 priv struct MinHeap {
   data : Array[(Int, Int, Int)]
 }
 
+///|
 fn MinHeap::new() -> MinHeap {
   { data: [] }
 }
 
+///|
 fn MinHeap::is_empty(self : MinHeap) -> Bool {
   self.data.length() == 0
 }
 
+///|
 fn MinHeap::push(self : MinHeap, item : (Int, Int, Int)) -> Unit {
   self.data.push(item)
   let mut i = self.data.length() - 1
@@ -29,6 +32,7 @@ fn MinHeap::push(self : MinHeap, item : (Int, Int, Int)) -> Unit {
   }
 }
 
+///|
 fn MinHeap::pop(self : MinHeap) -> (Int, Int, Int)? {
   if self.data.length() == 0 {
     return None

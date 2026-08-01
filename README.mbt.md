@@ -1,1 +1,1 @@
-# hzc666/moonpathfinding
+# hzc-666-ai/moonpathfinding

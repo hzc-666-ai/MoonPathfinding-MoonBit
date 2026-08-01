@@ -1,7 +1,10 @@
 import {
-  "hzc666/moonpathfinding/graph",
-  "hzc666/moonpathfinding/algo",
-  "hzc666/moonpathfinding/visualize",
-  "hzc666/moonpathfinding/maze",
-  "hzc666/moonpathfinding/bench",
-}
+  "hzc-666-ai/moonpathfinding/graph",
+  "hzc-666-ai/moonpathfinding/algo",
+  "hzc-666-ai/moonpathfinding/maze",
+  "hzc-666-ai/moonpathfinding/bench",
+} for "test"
+
+import {
+  "hzc-666-ai/moonpathfinding/graph",
+} for "wbtest"

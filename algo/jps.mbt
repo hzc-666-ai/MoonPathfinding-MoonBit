@@ -1,9 +1,20 @@
+///|
 /// Jump Point Search — grid-optimized A* that skips symmetric paths.
 /// Significantly faster than A* on large open grids with uniform costs.
 
 // Direction vectors: N, S, W, E, NW, NE, SW, SE
-let dirs_jps : Array[(Int, Int)] = [(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)]
+let dirs_jps : Array[(Int, Int)] = [
+  (-1, 0),
+  (1, 0),
+  (0, -1),
+  (0, 1),
+  (-1, -1),
+  (-1, 1),
+  (1, -1),
+  (1, 1),
+]
 
+///|
 /// Check if a cell position is passable.
 fn passable(grid : @graph.Grid, row : Int, col : Int) -> Bool {
   if row < 0 || row >= grid.height || col < 0 || col >= grid.width {
@@ -12,6 +23,7 @@ fn passable(grid : @graph.Grid, row : Int, col : Int) -> Bool {
   grid.is_passable(grid.pos_to_id(row, col))
 }
 
+///|
 /// Check whether a node has forced neighbors in the given direction.
 /// A forced neighbor exists when moving in a direction would cut off
 /// an alternative optimal path due to obstacles.
@@ -20,7 +32,7 @@ fn has_forced(
   row : Int,
   col : Int,
   dr : Int,
-  dc : Int
+  dc : Int,
 ) -> Bool {
   if dr != 0 && dc != 0 {
     // Diagonal move: check the two adjacent cells that would be pruned
@@ -28,32 +40,64 @@ fn has_forced(
       // Moving NW
       let block_n = !passable(grid, row - 1, col)
       let block_w = !passable(grid, row, col - 1)
-      if (block_n && passable(grid, row, col - 1) && passable(grid, row - 1, col - 1)) ||
-         (block_w && passable(grid, row - 1, col) && passable(grid, row - 1, col - 1)) {
+      if (
+          block_n &&
+          passable(grid, row, col - 1) &&
+          passable(grid, row - 1, col - 1)
+        ) ||
+        (
+          block_w &&
+          passable(grid, row - 1, col) &&
+          passable(grid, row - 1, col - 1)
+        ) {
         return true
       }
     } else if dr == -1 && dc == 1 {
       // Moving NE
       let block_n = !passable(grid, row - 1, col)
       let block_e = !passable(grid, row, col + 1)
-      if (block_n && passable(grid, row, col + 1) && passable(grid, row - 1, col + 1)) ||
-         (block_e && passable(grid, row - 1, col) && passable(grid, row - 1, col + 1)) {
+      if (
+          block_n &&
+          passable(grid, row, col + 1) &&
+          passable(grid, row - 1, col + 1)
+        ) ||
+        (
+          block_e &&
+          passable(grid, row - 1, col) &&
+          passable(grid, row - 1, col + 1)
+        ) {
         return true
       }
     } else if dr == 1 && dc == -1 {
       // Moving SW
       let block_s = !passable(grid, row + 1, col)
       let block_w = !passable(grid, row, col - 1)
-      if (block_s && passable(grid, row, col - 1) && passable(grid, row + 1, col - 1)) ||
-         (block_w && passable(grid, row + 1, col) && passable(grid, row + 1, col - 1)) {
+      if (
+          block_s &&
+          passable(grid, row, col - 1) &&
+          passable(grid, row + 1, col - 1)
+        ) ||
+        (
+          block_w &&
+          passable(grid, row + 1, col) &&
+          passable(grid, row + 1, col - 1)
+        ) {
         return true
       }
     } else if dr == 1 && dc == 1 {
       // Moving SE
       let block_s = !passable(grid, row + 1, col)
       let block_e = !passable(grid, row, col + 1)
-      if (block_s && passable(grid, row, col + 1) && passable(grid, row + 1, col + 1)) ||
-         (block_e && passable(grid, row + 1, col) && passable(grid, row + 1, col + 1)) {
+      if (
+          block_s &&
+          passable(grid, row, col + 1) &&
+          passable(grid, row + 1, col + 1)
+        ) ||
+        (
+          block_e &&
+          passable(grid, row + 1, col) &&
+          passable(grid, row + 1, col + 1)
+        ) {
         return true
       }
     }
@@ -77,6 +121,7 @@ fn has_forced(
   false
 }
 
+///|
 /// Jump recursively in the given direction, returning the next jump point if found.
 fn do_jump(
   grid : @graph.Grid,
@@ -85,7 +130,7 @@ fn do_jump(
   dr : Int,
   dc : Int,
   goal_r : Int,
-  goal_c : Int
+  goal_c : Int,
 ) -> (Int, Int)? {
   let nr = row + dr
   let nc = col + dc
@@ -112,13 +157,14 @@ fn do_jump(
   do_jump(grid, nr, nc, dr, dc, goal_r, goal_c)
 }
 
+///|
 /// Get successors for JPS by jumping in all 8 directions from a node.
 fn jps_neighbors(
   grid : @graph.Grid,
   row : Int,
   col : Int,
   goal_r : Int,
-  goal_c : Int
+  goal_c : Int,
 ) -> Array[(Int, Int)] {
   let result : Array[(Int, Int)] = []
   for i = 0; i < dirs_jps.length(); i = i + 1 {
@@ -131,20 +177,68 @@ fn jps_neighbors(
   result
 }
 
-/// Manhattan distance between two positions.
-fn manhattan(r1 : Int, c1 : Int, r2 : Int, c2 : Int) -> Int {
-  let dr = if r1 > r2 { r1 - r2 } else { r2 - r1 }
-  let dc = if c1 > c2 { c1 - c2 } else { c2 - c1 }
-  dr + dc
+///|
+/// Compute the full cost of a straight or diagonal jump segment.
+fn jump_cost(from_r : Int, from_c : Int, to_r : Int, to_c : Int) -> Int {
+  let row_steps = (to_r - from_r).abs()
+  let col_steps = (to_c - from_c).abs()
+  let diagonal_steps = if row_steps < col_steps { row_steps } else { col_steps }
+  let straight_steps = (row_steps - col_steps).abs()
+  diagonal_steps * 14 + straight_steps * 10
 }
 
+///|
+fn step_direction(delta : Int) -> Int {
+  if delta < 0 {
+    -1
+  } else if delta > 0 {
+    1
+  } else {
+    0
+  }
+}
+
+///|
+/// Expand jump-point segments into adjacent grid cells.
+fn expand_jump_path(
+  grid : @graph.Grid,
+  parent : Array[Int],
+  goal : Int,
+) -> Array[Int] {
+  let jump_points = rebuild_path(parent, goal)
+  if jump_points.length() <= 1 {
+    return jump_points
+  }
+  let result : Array[Int] = [jump_points[0]]
+  for i = 1; i < jump_points.length(); i = i + 1 {
+    let (initial_row, initial_col) = grid.id_to_pos(jump_points[i - 1])
+    let mut row = initial_row
+    let mut col = initial_col
+    let (target_row, target_col) = grid.id_to_pos(jump_points[i])
+    let dr = step_direction(target_row - row)
+    let dc = step_direction(target_col - col)
+    while row != target_row || col != target_col {
+      row = row + dr
+      col = col + dc
+      result.push(grid.pos_to_id(row, col))
+    }
+  }
+  result
+}
+
+///|
 /// Octile distance (for 8-directional grids, diagonal cost = sqrt(2)).
 fn octile(r1 : Int, c1 : Int, r2 : Int, c2 : Int) -> Int {
   let dr = if r1 > r2 { r1 - r2 } else { r2 - r1 }
   let dc = if c1 > c2 { c1 - c2 } else { c2 - c1 }
-  if dr < dc { dr * 14 + (dc - dr) * 10 } else { dc * 14 + (dr - dc) * 10 }
+  if dr < dc {
+    dr * 14 + (dc - dr) * 10
+  } else {
+    dc * 14 + (dr - dc) * 10
+  }
 }
 
+///|
 /// JPS pathfinding on a grid.
 /// Uses 8-directional movement with octile distance heuristic.
 pub fn jps(grid : @graph.Grid, start : Int, goal : Int) -> @graph.PathResult {
@@ -171,14 +265,18 @@ pub fn jps(grid : @graph.Grid, start : Int, goal : Int) -> @graph.PathResult {
           continue
         }
         if node == goal {
-          return @graph.PathResult::{ path: rebuild_path(parent, goal), cost: dist[goal], nodes_visited: nodes }
+          return @graph.PathResult::{
+            path: expand_jump_path(grid, parent, goal),
+            cost: dist[goal],
+            nodes_visited: nodes,
+          }
         }
         let (r, c) = grid.id_to_pos(node)
         let nbs = jps_neighbors(grid, r, c, goal_r, goal_c)
         for i = 0; i < nbs.length(); i = i + 1 {
           let (nr, nc) = nbs[i]
           let nb = grid.pos_to_id(nr, nc)
-          let step_cost = if nr != r && nc != c { 14 } else { 10 }
+          let step_cost = jump_cost(r, c, nr, nc)
           let new_g = dist[node] + step_cost
           let nb_d = dist[nb]
           if nb_d < 0 || new_g < nb_d {

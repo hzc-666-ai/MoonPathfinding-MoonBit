@@ -1,31 +1,23 @@
 /// Maze generation algorithms: Recursive Backtracker, Prim's, and simple random.
 
+///|
 /// Simple linear congruential generator for deterministic randomness.
-struct LCG {
+priv struct LCG {
   mut state : Int
 }
 
+///|
 fn LCG::new(seed : Int) -> LCG {
   { state: seed }
 }
 
+///|
 fn LCG::next(self : LCG) -> Int {
   self.state = (self.state * 1103515245 + 12345) & 0x7fffffff
   self.state
 }
 
-/// Shuffle an array in-place using Fisher-Yates.
-fn shuffle(arr : Array[Int], rng : LCG) -> Unit {
-  let mut i = arr.length() - 1
-  while i > 0 {
-    let j = rng.next() % (i + 1)
-    let tmp = arr[i]
-    arr[i] = arr[j]
-    arr[j] = tmp
-    i = i - 1
-  }
-}
-
+///|
 /// Generate a maze using recursive backtracker (DFS).
 /// Returns an ASCII string array where '#' = wall, '.' = passage.
 pub fn dfs_maze(width : Int, height : Int, seed : Int) -> Array[String] {
@@ -90,6 +82,7 @@ pub fn dfs_maze(width : Int, height : Int, seed : Int) -> Array[String] {
   result
 }
 
+///|
 /// Generate a maze using Prim's algorithm.
 /// Produces mazes with more branching and shorter dead ends.
 pub fn prim_maze(width : Int, height : Int, seed : Int) -> Array[String] {
@@ -162,8 +155,14 @@ pub fn prim_maze(width : Int, height : Int, seed : Int) -> Array[String] {
   result
 }
 
+///|
 /// Generate a random obstacle grid (not a maze, just random walls).
-pub fn random_obstacles(width : Int, height : Int, fill_pct : Int, seed : Int) -> Array[String] {
+pub fn random_obstacles(
+  width : Int,
+  height : Int,
+  fill_pct : Int,
+  seed : Int,
+) -> Array[String] {
   let rng = LCG::new(seed)
   let result : Array[String] = []
   for i = 0; i < height; i = i + 1 {

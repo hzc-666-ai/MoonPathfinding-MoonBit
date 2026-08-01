@@ -1,20 +1,22 @@
 /// IDA* — Iterative Deepening A* search.
 
+///|
 /// Result of one depth-bounded DFS step.
-struct BoundResult {
+priv struct BoundResult {
   found : Bool
   next_bound : Int
   count : Int
 }
 
+///|
 /// Depth-limited DFS for IDA*. Uses parent array for path reconstruction.
-fn dfs_bound[G : @graph.Graph](
+fn[G : @graph.Graph] dfs_bound(
   graph : G,
   node : Int,
   g : Int,
   threshold : Int,
   goal : Int,
-  parent : Array[Int]
+  parent : Array[Int],
 ) -> BoundResult {
   let f = g + @graph.Graph::heuristic(graph, node, goal)
 
@@ -50,8 +52,13 @@ fn dfs_bound[G : @graph.Graph](
   { found: false, next_bound: best_bound, count: total_count }
 }
 
+///|
 /// IDA* pathfinding — memory-efficient, good for large state spaces.
-pub fn[G : @graph.Graph] idastar(graph : G, start : Int, goal : Int) -> @graph.PathResult {
+pub fn[G : @graph.Graph] idastar(
+  graph : G,
+  start : Int,
+  goal : Int,
+) -> @graph.PathResult {
   if start == goal {
     return @graph.PathResult::{ path: [start], cost: 0, nodes_visited: 1 }
   }
@@ -68,7 +75,7 @@ pub fn[G : @graph.Graph] idastar(graph : G, start : Int, goal : Int) -> @graph.P
     total_nodes = total_nodes + result.count
     if result.found {
       let (path, cost) = rebuild_path_ida_with_cost(graph, parent, start, goal)
-      return @graph.PathResult::{ path: path, cost: cost, nodes_visited: total_nodes }
+      return @graph.PathResult::{ path, cost, nodes_visited: total_nodes }
     }
     if result.next_bound < 0 {
       break
@@ -79,8 +86,12 @@ pub fn[G : @graph.Graph] idastar(graph : G, start : Int, goal : Int) -> @graph.P
   @graph.PathResult::{ path: [], cost: 0, nodes_visited: total_nodes }
 }
 
-fn rebuild_path_ida_with_cost[G : @graph.Graph](
-  graph : G, parent : Array[Int], start : Int, goal : Int
+///|
+fn[G : @graph.Graph] rebuild_path_ida_with_cost(
+  graph : G,
+  parent : Array[Int],
+  start : Int,
+  goal : Int,
 ) -> (Array[Int], Int) {
   let temp : Array[Int] = []
   let mut cur = goal

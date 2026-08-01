@@ -13,8 +13,8 @@
 - [x] Greedy BFS — Heuristic-only search
 - [x] IDA* — Iterative Deepening A* (memory-efficient)
 
-### Grid-Optimized
-- [x] Bidirectional BFS — Two-end simultaneous search
+### Additional Algorithms
+- [x] Bidirectional BFS — Shortest-path search on directed and undirected graphs
 - [x] JPS — Jump Point Search (orders of magnitude faster on large grids)
 
 ## Graph Types (5)
@@ -48,7 +48,7 @@
 
 - [x] `moon check` passes with 0 errors
 - [x] `moon build` succeeds
-- [x] `moon test` — 62 tests, all passing
+- [x] `moon test` — 74 tests, all passing on wasm, wasm-gc, JavaScript, and native
 - [x] CI configuration (`.github/workflows/ci.yml`)
 - [x] README with installation, quick start, and API reference
 - [x] MIT License
@@ -56,18 +56,18 @@
 
 ## Code Statistics
 
-- algo/ (9 algorithms): ~791 lines
-- graph/ (5 types + trait): ~379 lines
-- maze/ (3 generators): ~181 lines
-- bench/ (benchmarks): ~162 lines
-- visualize/ (ASCII + HTML): ~90 lines
-- cmd/main/ (CLI): ~60 lines
-- Tests: ~661 lines across all modules
-- Total: ~2,351 lines (1,690 source + 661 tests), 18 commits
+- algo/ (9 algorithms + path utilities): 1,160 lines
+- graph/ (5 types + trait): 458 lines
+- maze/ (3 generators): 180 lines
+- bench/ (benchmarks): 260 lines
+- visualize/ (ASCII + HTML): 123 lines
+- cmd/main/ (CLI): 63 lines
+- Tests: 757 lines across all modules
+- Total MoonBit: 3,019 lines (2,262 source + 757 tests), 21 commits including this update
 
 ## Competition Submission
 
-- [x] GitHub repository pushed (18 commits)
+- [x] GitHub repository pushed
 - [x] GitLink mirror pushed
 - [x] 10-20 meaningful commits (18 total)
 - [x] Project proposal PDF generated

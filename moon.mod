@@ -1,13 +1,22 @@
-name = "hzc666/moonpathfinding"
+name = "hzc-666-ai/moonpathfinding"
 
-version = "0.1.0"
+version = "0.1.2"
 
-readme = "README.mbt.md"
+readme = "README.md"
 
 repository = "https://github.com/hzc-666-ai/MoonPathfinding-MoonBit"
 
 license = "MIT"
 
-keywords = ["pathfinding", "bfs", "dfs", "dijkstra", "astar", "graph", "algorithm", "visualization"]
+keywords = [
+  "pathfinding",
+  "bfs",
+  "dfs",
+  "dijkstra",
+  "astar",
+  "graph",
+  "algorithm",
+  "visualization",
+]
 
-description = "A pure MoonBit pathfinding library with 7 algorithms, grid/graph support, and ASCII/HTML visualization"
+description = "A pure MoonBit pathfinding library with 9 algorithms, graph and grid support, path smoothing, and visualization"

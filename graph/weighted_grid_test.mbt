@@ -1,5 +1,5 @@
+///|
 /// Tests for WeightedGrid.
-
 test "weighted grid pos conversion" {
   let cells = Array::make(9, true)
   let costs = Array::make(9, 1)
@@ -9,6 +9,7 @@ test "weighted grid pos conversion" {
   assert_eq(g.id_to_pos(4), (1, 1))
 }
 
+///|
 test "weighted grid cell costs" {
   let cells = Array::make(4, true)
   let costs = [1, 5, 3, 2]
@@ -18,6 +19,7 @@ test "weighted grid cell costs" {
   assert_eq(g.cell_cost(3), 2)
 }
 
+///|
 test "weighted grid from strings" {
   let lines = ["..,", ".;="]
   match @graph.WeightedGrid::from_strings(lines, false) {

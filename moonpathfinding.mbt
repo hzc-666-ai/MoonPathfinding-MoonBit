@@ -2,7 +2,8 @@
 ///
 /// # Modules
 /// - `@graph` — Graph trait, AdjacencyList, Grid
-/// - `@algo` — 7 algorithms (BFS, DFS, Dijkstra, A*, Greedy BFS, Bidirectional BFS, Bellman-Ford)
+/// - `@algo` — 9 algorithms (BFS, DFS, Dijkstra, A*, Greedy BFS,
+///   Bidirectional BFS, Bellman-Ford, IDA*, and JPS) plus path utilities
 /// - `@visualize` — ASCII terminal and HTML visualization
 ///
 /// # Quick Start

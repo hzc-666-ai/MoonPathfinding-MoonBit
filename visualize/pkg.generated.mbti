@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "hzc-666-ai/moonpathfinding/visualize"
+
+import {
+  "hzc-666-ai/moonpathfinding/graph",
+}
+
+// Values
+pub fn ascii_render(@graph.Grid, @graph.PathResult, Int, Int) -> String
+
+pub fn html_render(@graph.Grid, @graph.PathResult, Int, Int, String) -> String
+
+pub fn result_summary(String, @graph.PathResult) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

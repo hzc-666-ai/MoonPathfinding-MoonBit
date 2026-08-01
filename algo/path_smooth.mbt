@@ -1,40 +1,82 @@
-/// Path smoothing utilities — post-process paths to reduce waypoints
+/// Path smoothing and expansion utilities.
 
-/// Remove redundant waypoints from a path by checking line-of-sight
-/// between consecutive segments. If node B can be skipped (line from A to C
-/// is valid), remove B from the path.
-pub fn simplify_path(path : Array[Int], is_passable : (Int) -> Bool) -> Array[Int] {
-  if path.length() <= 2 { return path }
-
+///|
+/// Remove waypoints using a caller-provided line-of-sight predicate.
+/// The predicate must return true when the two nodes can be connected directly.
+pub fn smooth_path(
+  path : Array[Int],
+  line_of_sight : (Int, Int) -> Bool,
+) -> Array[Int] {
+  if path.length() <= 2 {
+    return path
+  }
   let result : Array[Int] = [path[0]]
-  let mut idx = 0
-
-  while idx < path.length() - 1 {
-    let mut furthest = idx + 1
-    let mut j = path.length() - 1
-    while j > idx + 1 {
-      if all_passable(path[idx], path[j], is_passable) && j > furthest {
-        furthest = j
+  let mut anchor = 0
+  while anchor < path.length() - 1 {
+    let mut furthest = anchor + 1
+    let mut candidate = path.length() - 1
+    while candidate > anchor + 1 {
+      if line_of_sight(path[anchor], path[candidate]) {
+        furthest = candidate
         break
       }
-      j = j - 1
+      candidate = candidate - 1
     }
     result.push(path[furthest])
-    idx = furthest
+    anchor = furthest
   }
   result
 }
 
-fn all_passable(start : Int, end : Int, is_passable : (Int) -> Bool) -> Bool {
-  // For graph-based paths (not grid), we assume all intermediate nodes are passable
+///|
+fn path_range_passable(
+  path : Array[Int],
+  from : Int,
+  to : Int,
+  is_passable : (Int) -> Bool,
+) -> Bool {
+  for i = from; i <= to; i = i + 1 {
+    if !is_passable(path[i]) {
+      return false
+    }
+  }
   true
 }
 
-/// Smooth a path by merging close waypoints.
-/// Removes nodes that are within `min_dist` of the previous kept node.
-pub fn decimate_path(path : Array[Int], min_dist : Int) -> Array[Int] {
-  if path.length() <= 1 { return path }
+///|
+/// Compatibility helper for callers that only have a node-passability predicate.
+/// For geometric smoothing, prefer smooth_path and provide line-of-sight checks.
+pub fn simplify_path(
+  path : Array[Int],
+  is_passable : (Int) -> Bool,
+) -> Array[Int] {
+  if path.length() <= 2 {
+    return path
+  }
+  let result : Array[Int] = [path[0]]
+  let mut anchor = 0
+  while anchor < path.length() - 1 {
+    let mut furthest = anchor + 1
+    let mut candidate = path.length() - 1
+    while candidate > anchor + 1 {
+      if path_range_passable(path, anchor, candidate, is_passable) {
+        furthest = candidate
+        break
+      }
+      candidate = candidate - 1
+    }
+    result.push(path[furthest])
+    anchor = furthest
+  }
+  result
+}
 
+///|
+/// Remove nodes that are closer than min_dist to the previous kept node.
+pub fn decimate_path(path : Array[Int], min_dist : Int) -> Array[Int] {
+  if path.length() <= 1 {
+    return path
+  }
   let result : Array[Int] = [path[0]]
   let mut last = path[0]
   for i = 1; i < path.length(); i = i + 1 {
@@ -44,43 +86,125 @@ pub fn decimate_path(path : Array[Int], min_dist : Int) -> Array[Int] {
       last = path[i]
     }
   }
-
-  // Always include the last node
-  let last_idx = path.length() - 1
-  if result[result.length() - 1] != path[last_idx] {
-    result.push(path[last_idx])
+  let final_node = path[path.length() - 1]
+  if result[result.length() - 1] != final_node {
+    result.push(final_node)
   }
   result
 }
 
-/// Interpolate a path with intermediate steps.
-/// Expands path to include all nodes between waypoints (e.g., for grid walking).
-pub fn expand_path(path : Array[Int], neighbors : (Int) -> Array[(Int, Int)]) -> Array[Int] {
-  path
+///|
+fn index_of_node(nodes : Array[Int], target : Int) -> Int {
+  for i = 0; i < nodes.length(); i = i + 1 {
+    if nodes[i] == target {
+      return i
+    }
+  }
+  -1
 }
 
-/// Count the number of direction changes in a path.
-/// Useful for measuring path quality (fewer turns = smoother path).
+///|
+fn connect_waypoints(
+  start : Int,
+  goal : Int,
+  neighbors : (Int) -> Array[(Int, Int)],
+) -> Array[Int] {
+  if start == goal {
+    return [start]
+  }
+  let queue : Array[Int] = [start]
+  let discovered : Array[Int] = [start]
+  let parent : Array[Int] = [-1]
+  let mut head = 0
+  let mut found = false
+  while head < queue.length() && !found {
+    let node = queue[head]
+    head = head + 1
+    for edge in neighbors(node) {
+      let (next, _) = edge
+      if index_of_node(discovered, next) == -1 {
+        discovered.push(next)
+        parent.push(node)
+        queue.push(next)
+        if next == goal {
+          found = true
+        }
+      }
+    }
+  }
+  if !found {
+    return []
+  }
+
+  let reversed : Array[Int] = [goal]
+  let mut current = goal
+  while current != start {
+    let index = index_of_node(discovered, current)
+    if index == -1 || parent[index] == -1 {
+      return []
+    }
+    current = parent[index]
+    reversed.push(current)
+  }
+  let segment : Array[Int] = []
+  let mut i = reversed.length() - 1
+  while i >= 0 {
+    segment.push(reversed[i])
+    i = i - 1
+  }
+  segment
+}
+
+///|
+/// Expand every waypoint pair into a continuous shortest unweighted segment.
+/// Returns an empty path if any pair cannot be connected by neighbors.
+pub fn expand_path(
+  path : Array[Int],
+  neighbors : (Int) -> Array[(Int, Int)],
+) -> Array[Int] {
+  if path.length() <= 1 {
+    return path
+  }
+  let result : Array[Int] = [path[0]]
+  for i = 1; i < path.length(); i = i + 1 {
+    let segment = connect_waypoints(path[i - 1], path[i], neighbors)
+    if segment.length() == 0 {
+      return []
+    }
+    for j = 1; j < segment.length(); j = j + 1 {
+      result.push(segment[j])
+    }
+  }
+  result
+}
+
+///|
+/// Count direction changes in a path represented by integer node ids.
 pub fn count_turns(path : Array[Int]) -> Int {
-  if path.length() <= 2 { return 0 }
-
+  if path.length() <= 2 {
+    return 0
+  }
   let mut turns = 0
-  let mut prev_dir = path[1] - path[0]
-
+  let mut previous_direction = path[1] - path[0]
   for i = 2; i < path.length(); i = i + 1 {
-    let dir = path[i] - path[i - 1]
-    if dir != prev_dir {
+    let direction = path[i] - path[i - 1]
+    if direction != previous_direction {
       turns = turns + 1
-      prev_dir = dir
+      previous_direction = direction
     }
   }
   turns
 }
 
+///|
 /// Compute the total Manhattan distance of a path.
-pub fn path_length_manhattan(path : Array[Int], id_to_pos : (Int) -> (Int, Int)) -> Int {
-  if path.length() <= 1 { return 0 }
-
+pub fn path_length_manhattan(
+  path : Array[Int],
+  id_to_pos : (Int) -> (Int, Int),
+) -> Int {
+  if path.length() <= 1 {
+    return 0
+  }
   let mut total = 0
   for i = 1; i < path.length(); i = i + 1 {
     let (x1, y1) = id_to_pos(path[i - 1])

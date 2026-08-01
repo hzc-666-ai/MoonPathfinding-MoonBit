@@ -1,8 +1,14 @@
 /// Visualization: ASCII terminal output and HTML export for grid pathfinding.
 
+///|
 /// Render a grid with path as ASCII art.
 /// Symbols: S=start, E=goal, *=path, ·=passable, #=wall
-pub fn ascii_render(grid : @graph.Grid, result : @graph.PathResult, start : Int, goal : Int) -> String {
+pub fn ascii_render(
+  grid : @graph.Grid,
+  result : @graph.PathResult,
+  start : Int,
+  goal : Int,
+) -> String {
   let n = grid.node_count()
   let in_path = Array::make(n, false)
   for i = 0; i < result.path.length(); i = i + 1 {
@@ -32,8 +38,15 @@ pub fn ascii_render(grid : @graph.Grid, result : @graph.PathResult, start : Int,
   out
 }
 
+///|
 /// Render the grid as an HTML table.
-pub fn html_render(grid : @graph.Grid, result : @graph.PathResult, start : Int, goal : Int, title : String) -> String {
+pub fn html_render(
+  grid : @graph.Grid,
+  result : @graph.PathResult,
+  start : Int,
+  goal : Int,
+  title : String,
+) -> String {
   let n = grid.node_count()
   let in_path = Array::make(n, false)
   for i = 0; i < result.path.length(); i = i + 1 {
@@ -45,18 +58,27 @@ pub fn html_render(grid : @graph.Grid, result : @graph.PathResult, start : Int, 
   html = html + "<title>" + title + "</title>\n"
   html = html + "<style>\n"
   html = html + "  table { border-collapse: collapse; margin: 20px auto; }\n"
-  html = html + "  td { width: 24px; height: 24px; text-align: center; font-size: 14px; border: 1px solid #ddd; }\n"
+  html = html +
+    "  td { width: 24px; height: 24px; text-align: center; font-size: 14px; border: 1px solid #ddd; }\n"
   html = html + "  .wall { background: #333; }\n"
   html = html + "  .path { background: #4CAF50; color: white; }\n"
-  html = html + "  .start { background: #2196F3; color: white; font-weight: bold; }\n"
-  html = html + "  .goal { background: #f44336; color: white; font-weight: bold; }\n"
+  html = html +
+    "  .start { background: #2196F3; color: white; font-weight: bold; }\n"
+  html = html +
+    "  .goal { background: #f44336; color: white; font-weight: bold; }\n"
   html = html + "  .empty { background: #fafafa; }\n"
-  html = html + "  .info { text-align: center; font-family: monospace; margin: 10px; }\n"
+  html = html +
+    "  .info { text-align: center; font-family: monospace; margin: 10px; }\n"
   html = html + "</style>\n</head>\n<body>\n"
   html = html + "<div class=\"info\">" + title + "</div>\n"
-  html = html + "<div class=\"info\">Path length: " + result.path.length().to_string()
+  html = html +
+    "<div class=\"info\">Path length: " +
+    result.path.length().to_string()
   html = html + " | Cost: " + result.cost.to_string()
-  html = html + " | Nodes visited: " + result.nodes_visited.to_string() + "</div>\n"
+  html = html +
+    " | Nodes visited: " +
+    result.nodes_visited.to_string() +
+    "</div>\n"
   html = html + "<table>\n"
 
   for row = 0; row < grid.height; row = row + 1 {
@@ -81,10 +103,21 @@ pub fn html_render(grid : @graph.Grid, result : @graph.PathResult, start : Int, 
   html
 }
 
+///|
 /// Print a formatted result summary.
 pub fn result_summary(algo_name : String, result : @graph.PathResult) -> String {
   if result.path.length() == 0 {
-    return algo_name + ": No path found (visited " + result.nodes_visited.to_string() + " nodes)"
+    return algo_name +
+      ": No path found (visited " +
+      result.nodes_visited.to_string() +
+      " nodes)"
   }
-  algo_name + ": path length " + result.path.length().to_string() + ", cost " + result.cost.to_string() + ", visited " + result.nodes_visited.to_string() + " nodes"
+  algo_name +
+  ": path length " +
+  result.path.length().to_string() +
+  ", cost " +
+  result.cost.to_string() +
+  ", visited " +
+  result.nodes_visited.to_string() +
+  " nodes"
 }

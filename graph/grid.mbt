@@ -1,17 +1,19 @@
+///|
 /// 2D grid graph for pathfinding.
 /// Cells: true = passable, false = blocked.
-
 pub(all) struct Grid {
   width : Int
   height : Int
   cells : Array[Bool]
 }
 
+///|
 /// Create a Grid from width, height and a cell array (row-major).
 pub fn Grid::new(width : Int, height : Int, cells : Array[Bool]) -> Grid {
-  { width: width, height: height, cells: cells }
+  { width, height, cells }
 }
 
+///|
 /// Parse a grid from ASCII art strings.
 /// '#' or '1' = wall, anything else = passable.
 pub fn Grid::from_strings(lines : Array[String]) -> Grid? {
@@ -31,24 +33,28 @@ pub fn Grid::from_strings(lines : Array[String]) -> Grid? {
       cells.push(ch != "#" && ch != "1")
     }
   }
-  Some({ width: width, height: height, cells: cells })
+  Some({ width, height, cells })
 }
 
+///|
 /// Convert (row, col) to node id.
 pub fn Grid::pos_to_id(self : Grid, row : Int, col : Int) -> Int {
   row * self.width + col
 }
 
+///|
 /// Convert node id to (row, col).
 pub fn Grid::id_to_pos(self : Grid, id : Int) -> (Int, Int) {
   (id / self.width, id % self.width)
 }
 
+///|
 /// Check if a cell is passable.
 pub fn Grid::is_passable(self : Grid, id : Int) -> Bool {
   id >= 0 && id < self.cells.length() && self.cells[id]
 }
 
+///|
 /// Find the node id for a marker character in the grid ('S' = start, 'E' = goal).
 pub fn Grid::find_marker(lines : Array[String], marker : String) -> (Int, Int)? {
   for i = 0; i < lines.length(); i = i + 1 {
@@ -61,11 +67,13 @@ pub fn Grid::find_marker(lines : Array[String], marker : String) -> (Int, Int)? 
   None
 }
 
-pub impl Graph for Grid with node_count(self) -> Int {
+///|
+pub impl Graph for Grid with fn node_count(self) -> Int {
   self.width * self.height
 }
 
-pub impl Graph for Grid with neighbors(self, node : Int) -> Array[(Int, Int)] {
+///|
+pub impl Graph for Grid with fn neighbors(self, node : Int) -> Array[(Int, Int)] {
   let result : Array[(Int, Int)] = []
   let (row, col) = self.id_to_pos(node)
   let dirs = [(-1, 0, 1), (1, 0, 1), (0, -1, 1), (0, 1, 1)]
@@ -83,7 +91,8 @@ pub impl Graph for Grid with neighbors(self, node : Int) -> Array[(Int, Int)] {
   result
 }
 
-pub impl Graph for Grid with heuristic(self, from : Int, to : Int) -> Int {
+///|
+pub impl Graph for Grid with fn heuristic(self, from : Int, to : Int) -> Int {
   let (r1, c1) = self.id_to_pos(from)
   let (r2, c2) = self.id_to_pos(to)
   let dr = if r1 > r2 { r1 - r2 } else { r2 - r1 }

@@ -15,10 +15,10 @@ A comprehensive pathfinding library for MoonBit, featuring **9 algorithms**, **5
 | Dijkstra | Uninformed | Yes | Yes | Priority queue |
 | A* | Informed | Yes | Yes | f = g + h |
 | Greedy BFS | Informed | No | Yes | f = h only |
-| Bidirectional BFS | Uninformed | Yes (unweighted) | No | Two-end search |
-| Bellman-Ford | Uninformed | Yes | Yes (neg. OK) | DP-based |
+| Bidirectional BFS | Uninformed | Yes (unweighted) | No | Directed and undirected graphs |
+| Bellman-Ford | Uninformed | Yes | Yes (neg. OK) | Reachable negative-cycle detection |
 | IDA* | Informed | Yes | Yes | Memory-efficient |
-| JPS | Informed | Yes | Uniform grid | Jump point pruning |
+| JPS | Informed | Yes | Uniform grid | Continuous expanded path, 10/14 costs |
 
 ### Graph Types (5)
 
@@ -42,7 +42,7 @@ A comprehensive pathfinding library for MoonBit, featuring **9 algorithms**, **5
 ## Installation
 
 ```bash
-moon add hzc666/moonpathfinding
+moon add hzc-666-ai/moonpathfinding
 ```
 
 ## Quick Start
@@ -122,6 +122,17 @@ moonpathfinding/
 @algo.idastar(graph, start, goal)          -> PathResult
 @algo.jps(grid, start, goal)              -> PathResult
 ```
+
+### Path Utilities
+
+```moonbit
+@algo.smooth_path(path, line_of_sight)    -> Array[Int]
+@algo.simplify_path(path, is_passable)    -> Array[Int]
+@algo.expand_path(path, neighbors)        -> Array[Int]
+@algo.decimate_path(path, min_dist)       -> Array[Int]
+```
+
+`smooth_path` uses an explicit two-node line-of-sight predicate. `expand_path` connects each waypoint pair with a continuous unweighted BFS segment and returns an empty path when a segment is unreachable.
 
 ### Graph Trait
 

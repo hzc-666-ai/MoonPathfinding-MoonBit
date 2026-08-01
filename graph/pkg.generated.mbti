@@ -1,0 +1,73 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "hzc-666-ai/moonpathfinding/graph"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct AdjacencyList {
+  mut adj : Array[Array[(Int, Int)]]
+}
+pub fn AdjacencyList::add_edge(Self, Int, Int, Int) -> Unit
+pub fn AdjacencyList::add_edge_undirected(Self, Int, Int, Int) -> Unit
+pub fn AdjacencyList::new(Int) -> Self
+pub impl Graph for AdjacencyList
+
+pub(all) struct Grid {
+  width : Int
+  height : Int
+  cells : Array[Bool]
+}
+pub fn Grid::find_marker(Array[String], String) -> (Int, Int)?
+pub fn Grid::from_strings(Array[String]) -> Self?
+pub fn Grid::id_to_pos(Self, Int) -> (Int, Int)
+pub fn Grid::is_passable(Self, Int) -> Bool
+pub fn Grid::new(Int, Int, Array[Bool]) -> Self
+pub fn Grid::pos_to_id(Self, Int, Int) -> Int
+pub impl Graph for Grid
+
+pub(all) struct HexGrid {
+  width : Int
+  height : Int
+  cells : Array[Bool]
+}
+pub fn HexGrid::from_strings(Array[String]) -> Self?
+pub fn HexGrid::id_to_pos(Self, Int) -> (Int, Int)
+pub fn HexGrid::is_passable(Self, Int) -> Bool
+pub fn HexGrid::new(Int, Int, Array[Bool]) -> Self
+pub fn HexGrid::pos_to_id(Self, Int, Int) -> Int
+pub impl Graph for HexGrid
+
+pub(all) struct PathResult {
+  path : Array[Int]
+  cost : Int
+  nodes_visited : Int
+}
+
+pub(all) struct WeightedGrid {
+  width : Int
+  height : Int
+  cells : Array[Bool]
+  costs : Array[Int]
+  diagonal : Bool
+  diagonal_cost : Int
+}
+pub fn WeightedGrid::cell_cost(Self, Int) -> Int
+pub fn WeightedGrid::from_strings(Array[String], Bool) -> Self?
+pub fn WeightedGrid::id_to_pos(Self, Int) -> (Int, Int)
+pub fn WeightedGrid::is_passable(Self, Int) -> Bool
+pub fn WeightedGrid::new(Int, Int, Array[Bool], Array[Int], Bool) -> Self
+pub fn WeightedGrid::new_with_diag(Int, Int, Array[Bool], Array[Int], Bool, Int) -> Self
+pub fn WeightedGrid::pos_to_id(Self, Int, Int) -> Int
+pub impl Graph for WeightedGrid
+
+// Type aliases
+
+// Traits
+pub trait Graph {
+  fn node_count(Self) -> Int
+  fn neighbors(Self, Int) -> Array[(Int, Int)]
+  fn heuristic(Self, Int, Int) -> Int
+}
+

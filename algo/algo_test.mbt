@@ -1,114 +1,157 @@
+///|
 /// Tests for pathfinding algorithms.
-
-// --- Helper: build a simple graph for testing ---
-
 fn make_simple_graph() -> @graph.AdjacencyList {
-  let g = @graph.AdjacencyList::new(3)
-  g.add_edge(0, 1, 1)
-  g.add_edge(1, 2, 2)
-  g.add_edge(0, 2, 10)
-  g
+  let graph = @graph.AdjacencyList::new(3)
+  graph.add_edge(0, 1, 1)
+  graph.add_edge(1, 2, 2)
+  graph.add_edge(0, 2, 10)
+  graph
 }
 
-// --- BFS ---
-
-test "bfs simple graph" {
-  let g = make_simple_graph()
-  let r = @algo.bfs(g, 0, 2)
-  // 0->2 direct edge is shorter (1 edge) than 0->1->2 (2 edges)
-  assert_eq(r.path.length(), 2)
-  assert_eq(r.path[0], 0)
-  assert_eq(r.path[1], 2)
+///|
+test "bfs uses the fewest edges" {
+  let result = @algo.bfs(make_simple_graph(), 0, 2)
+  assert_eq(result.path, [0, 2])
+  assert_eq(result.cost, 1)
 }
 
+///|
 test "bfs start equals goal" {
-  let g = make_simple_graph()
-  let r = @algo.bfs(g, 1, 1)
-  assert_eq(r.path, [1])
-  assert_eq(r.cost, 0)
+  let result = @algo.bfs(make_simple_graph(), 1, 1)
+  assert_eq(result.path, [1])
+  assert_eq(result.cost, 0)
 }
 
-test "bfs no path" {
-  let g = @graph.AdjacencyList::new(2)
-  let r = @algo.bfs(g, 0, 1)
-  assert_eq(r.path.length(), 0)
+///|
+test "bfs reports no path" {
+  let result = @algo.bfs(@graph.AdjacencyList::new(2), 0, 1)
+  assert_eq(result.path, [])
+  assert_eq(result.cost, 0)
 }
 
-// --- DFS ---
-
-test "dfs finds path" {
-  let g = make_simple_graph()
-  let r = @algo.dfs(g, 0, 2)
-  assert_true(r.path.length() > 0)
-  assert_eq(r.path[0], 0)
-  assert_eq(r.path[r.path.length() - 1], 2)
+///|
+test "dfs finds a valid directed path" {
+  let graph = @graph.AdjacencyList::new(3)
+  graph.add_edge(0, 1, 1)
+  graph.add_edge(1, 2, 1)
+  let result = @algo.dfs(graph, 0, 2)
+  assert_eq(result.path, [0, 1, 2])
+  assert_eq(result.cost, 2)
 }
 
-test "dfs start equals goal" {
-  let g = make_simple_graph()
-  let r = @algo.dfs(g, 0, 0)
-  assert_eq(r.path, [0])
+///|
+test "dijkstra uses weighted cost" {
+  let result = @algo.dijkstra(make_simple_graph(), 0, 2)
+  assert_eq(result.path, [0, 1, 2])
+  assert_eq(result.cost, 3)
 }
 
-// --- Dijkstra ---
-
-test "dijkstra shortest path weighted" {
-  let g = make_simple_graph()
-  let r = @algo.dijkstra(g, 0, 2)
-  assert_eq(r.path, [0, 1, 2])
-  assert_eq(r.cost, 3)
+///|
+test "astar uses weighted cost" {
+  let result = @algo.astar(make_simple_graph(), 0, 2)
+  assert_eq(result.path, [0, 1, 2])
+  assert_eq(result.cost, 3)
 }
 
-// --- A* ---
-
-test "astar shortest path" {
-  let g = make_simple_graph()
-  let r = @algo.astar(g, 0, 2)
-  assert_eq(r.path, [0, 1, 2])
-  assert_eq(r.cost, 3)
+///|
+test "greedy reports full selected path cost" {
+  let graph = @graph.AdjacencyList::new(3)
+  graph.add_edge(0, 1, 7)
+  graph.add_edge(1, 2, 11)
+  let result = @algo.greedy_bfs(graph, 0, 2)
+  assert_eq(result.path, [0, 1, 2])
+  assert_eq(result.cost, 18)
 }
 
-// --- Greedy BFS ---
-
-test "greedy bfs finds path" {
-  let g = make_simple_graph()
-  let r = @algo.greedy_bfs(g, 0, 2)
-  assert_true(r.path.length() > 0)
-  assert_eq(r.path[0], 0)
-  assert_eq(r.path[r.path.length() - 1], 2)
+///|
+test "bidirectional bfs supports directed graphs" {
+  let graph = @graph.AdjacencyList::new(4)
+  graph.add_edge(0, 1, 1)
+  graph.add_edge(1, 2, 1)
+  graph.add_edge(2, 3, 1)
+  let result = @algo.bidirectional_bfs(graph, 0, 3)
+  assert_eq(result.path, [0, 1, 2, 3])
+  assert_eq(result.cost, 3)
 }
 
-// --- Bidirectional BFS ---
-
-test "bidirectional bfs shortest path" {
-  let g = make_simple_graph()
-  let r = @algo.bidirectional_bfs(g, 0, 2)
-  assert_eq(r.path.length(), 2)
+///|
+test "bidirectional bfs respects edge direction" {
+  let graph = @graph.AdjacencyList::new(3)
+  graph.add_edge(0, 1, 1)
+  graph.add_edge(1, 2, 1)
+  let result = @algo.bidirectional_bfs(graph, 2, 0)
+  assert_eq(result.path, [])
 }
 
-// --- Bellman-Ford ---
+///|
+test "bidirectional bfs chooses the shortest meeting path" {
+  let graph = @graph.AdjacencyList::new(7)
+  graph.add_edge(0, 1, 1)
+  graph.add_edge(0, 2, 1)
+  graph.add_edge(1, 3, 1)
+  graph.add_edge(3, 4, 1)
+  graph.add_edge(4, 6, 1)
+  graph.add_edge(2, 5, 1)
+  graph.add_edge(5, 6, 1)
+  let result = @algo.bidirectional_bfs(graph, 0, 6)
+  assert_eq(result.path, [0, 2, 5, 6])
+  assert_eq(result.cost, 3)
+}
 
+///|
 test "bellman ford shortest path" {
-  let g = make_simple_graph()
-  let r = @algo.bellman_ford(g, 0, 2)
-  assert_eq(r.path, [0, 1, 2])
-  assert_eq(r.cost, 3)
+  let result = @algo.bellman_ford(make_simple_graph(), 0, 2)
+  assert_eq(result.path, [0, 1, 2])
+  assert_eq(result.cost, 3)
 }
 
-test "bellman ford negative weights" {
-  let g = @graph.AdjacencyList::new(5)
-  g.add_edge(0, 1, 6)
-  g.add_edge(0, 2, 7)
-  g.add_edge(1, 2, 8)
-  g.add_edge(1, 3, 5)
-  g.add_edge(1, 4, -4)
-  g.add_edge(2, 3, -3)
-  g.add_edge(2, 4, 9)
-  g.add_edge(3, 1, -2)
-  g.add_edge(4, 3, 7)
-  g.add_edge(4, 0, 2)
-  let r = @algo.bellman_ford(g, 0, 4)
-  assert_true(r.path.length() > 0)
-  assert_eq(r.path[0], 0)
-  assert_eq(r.path[r.path.length() - 1], 4)
+///|
+test "bellman ford preserves negative distances" {
+  let graph = @graph.AdjacencyList::new(5)
+  graph.add_edge(0, 1, 6)
+  graph.add_edge(0, 2, 7)
+  graph.add_edge(1, 2, 8)
+  graph.add_edge(1, 3, 5)
+  graph.add_edge(1, 4, -4)
+  graph.add_edge(2, 3, -3)
+  graph.add_edge(2, 4, 9)
+  graph.add_edge(3, 1, -2)
+  graph.add_edge(4, 3, 7)
+  graph.add_edge(4, 0, 2)
+  let result = @algo.bellman_ford(graph, 0, 4)
+  assert_eq(result.path, [0, 2, 3, 1, 4])
+  assert_eq(result.cost, -2)
+}
+
+///|
+test "bellman ford rejects a reachable negative cycle" {
+  let graph = @graph.AdjacencyList::new(4)
+  graph.add_edge(0, 1, 1)
+  graph.add_edge(1, 2, -2)
+  graph.add_edge(2, 1, -2)
+  graph.add_edge(2, 3, 1)
+  let result = @algo.bellman_ford(graph, 0, 3)
+  assert_eq(result.path, [])
+  assert_eq(result.cost, 0)
+}
+
+///|
+test "bellman ford checks a negative cycle when start equals goal" {
+  let graph = @graph.AdjacencyList::new(2)
+  graph.add_edge(0, 1, -1)
+  graph.add_edge(1, 0, -1)
+  let result = @algo.bellman_ford(graph, 0, 0)
+  assert_eq(result.path, [])
+}
+
+///|
+test "bellman ford ignores an unreachable negative cycle" {
+  let graph = @graph.AdjacencyList::new(5)
+  graph.add_edge(0, 1, 2)
+  graph.add_edge(1, 4, 3)
+  graph.add_edge(2, 3, -2)
+  graph.add_edge(3, 2, -2)
+  let result = @algo.bellman_ford(graph, 0, 4)
+  assert_eq(result.path, [0, 1, 4])
+  assert_eq(result.cost, 5)
 }

@@ -1,5 +1,6 @@
 /// Pathfinding algorithms: BFS, DFS, Dijkstra, A*, Greedy BFS.
 
+///|
 /// Rebuild the path from start -> goal using parent array.
 fn rebuild_path(parent : Array[Int], goal : Int) -> Array[Int] {
   let temp : Array[Int] = []
@@ -17,8 +18,13 @@ fn rebuild_path(parent : Array[Int], goal : Int) -> Array[Int] {
   path
 }
 
+///|
 /// Breadth-First Search — guaranteed shortest path on unweighted graphs.
-pub fn[G : @graph.Graph] bfs(graph : G, start : Int, goal : Int) -> @graph.PathResult {
+pub fn[G : @graph.Graph] bfs(
+  graph : G,
+  start : Int,
+  goal : Int,
+) -> @graph.PathResult {
   if start == goal {
     return @graph.PathResult::{ path: [start], cost: 0, nodes_visited: 1 }
   }
@@ -41,7 +47,11 @@ pub fn[G : @graph.Graph] bfs(graph : G, start : Int, goal : Int) -> @graph.PathR
         parent[nb] = node
         nodes = nodes + 1
         if nb == goal {
-          return @graph.PathResult::{ path: rebuild_path(parent, goal), cost: rebuild_path(parent, goal).length() - 1, nodes_visited: nodes }
+          return @graph.PathResult::{
+            path: rebuild_path(parent, goal),
+            cost: rebuild_path(parent, goal).length() - 1,
+            nodes_visited: nodes,
+          }
         }
         queue.push(nb)
       }
@@ -50,8 +60,13 @@ pub fn[G : @graph.Graph] bfs(graph : G, start : Int, goal : Int) -> @graph.PathR
   @graph.PathResult::{ path: [], cost: 0, nodes_visited: nodes }
 }
 
+///|
 /// Depth-First Search — not guaranteed to find the shortest path.
-pub fn[G : @graph.Graph] dfs(graph : G, start : Int, goal : Int) -> @graph.PathResult {
+pub fn[G : @graph.Graph] dfs(
+  graph : G,
+  start : Int,
+  goal : Int,
+) -> @graph.PathResult {
   if start == goal {
     return @graph.PathResult::{ path: [start], cost: 0, nodes_visited: 1 }
   }
@@ -70,7 +85,11 @@ pub fn[G : @graph.Graph] dfs(graph : G, start : Int, goal : Int) -> @graph.PathR
         visited[node] = true
         nodes = nodes + 1
         if node == goal {
-          return @graph.PathResult::{ path: rebuild_path(parent, goal), cost: rebuild_path(parent, goal).length() - 1, nodes_visited: nodes }
+          return @graph.PathResult::{
+            path: rebuild_path(parent, goal),
+            cost: rebuild_path(parent, goal).length() - 1,
+            nodes_visited: nodes,
+          }
         }
         let nbs = @graph.Graph::neighbors(graph, node)
         for i = 0; i < nbs.length(); i = i + 1 {
@@ -87,8 +106,13 @@ pub fn[G : @graph.Graph] dfs(graph : G, start : Int, goal : Int) -> @graph.PathR
   @graph.PathResult::{ path: [], cost: 0, nodes_visited: nodes }
 }
 
+///|
 /// Dijkstra's algorithm — shortest path on weighted graphs (non-negative weights).
-pub fn[G : @graph.Graph] dijkstra(graph : G, start : Int, goal : Int) -> @graph.PathResult {
+pub fn[G : @graph.Graph] dijkstra(
+  graph : G,
+  start : Int,
+  goal : Int,
+) -> @graph.PathResult {
   if start == goal {
     return @graph.PathResult::{ path: [start], cost: 0, nodes_visited: 1 }
   }
@@ -108,7 +132,11 @@ pub fn[G : @graph.Graph] dijkstra(graph : G, start : Int, goal : Int) -> @graph.
           continue
         }
         if node == goal {
-          return @graph.PathResult::{ path: rebuild_path(parent, goal), cost: dist[goal], nodes_visited: nodes }
+          return @graph.PathResult::{
+            path: rebuild_path(parent, goal),
+            cost: dist[goal],
+            nodes_visited: nodes,
+          }
         }
         let nbs = @graph.Graph::neighbors(graph, node)
         for i = 0; i < nbs.length(); i = i + 1 {
@@ -133,8 +161,13 @@ pub fn[G : @graph.Graph] dijkstra(graph : G, start : Int, goal : Int) -> @graph.
   @graph.PathResult::{ path: [], cost: 0, nodes_visited: nodes }
 }
 
+///|
 /// A* search — informed shortest path using heuristic.
-pub fn[G : @graph.Graph] astar(graph : G, start : Int, goal : Int) -> @graph.PathResult {
+pub fn[G : @graph.Graph] astar(
+  graph : G,
+  start : Int,
+  goal : Int,
+) -> @graph.PathResult {
   if start == goal {
     return @graph.PathResult::{ path: [start], cost: 0, nodes_visited: 1 }
   }
@@ -155,7 +188,11 @@ pub fn[G : @graph.Graph] astar(graph : G, start : Int, goal : Int) -> @graph.Pat
           continue
         }
         if node == goal {
-          return @graph.PathResult::{ path: rebuild_path(parent, goal), cost: dist[goal], nodes_visited: nodes }
+          return @graph.PathResult::{
+            path: rebuild_path(parent, goal),
+            cost: dist[goal],
+            nodes_visited: nodes,
+          }
         }
         let nbs = @graph.Graph::neighbors(graph, node)
         for i = 0; i < nbs.length(); i = i + 1 {
@@ -181,35 +218,45 @@ pub fn[G : @graph.Graph] astar(graph : G, start : Int, goal : Int) -> @graph.Pat
   @graph.PathResult::{ path: [], cost: 0, nodes_visited: nodes }
 }
 
+///|
 /// Greedy Best-First Search — uses only heuristic, ignores edge costs.
-pub fn[G : @graph.Graph] greedy_bfs(graph : G, start : Int, goal : Int) -> @graph.PathResult {
+pub fn[G : @graph.Graph] greedy_bfs(
+  graph : G,
+  start : Int,
+  goal : Int,
+) -> @graph.PathResult {
   if start == goal {
     return @graph.PathResult::{ path: [start], cost: 0, nodes_visited: 1 }
   }
   let n = @graph.Graph::node_count(graph)
   let visited = Array::make(n, false)
   let parent = Array::make(n, -1)
+  let cost = Array::make(n, 0)
   let heap = MinHeap::new()
   visited[start] = true
   let h0 = @graph.Graph::heuristic(graph, start, goal)
   heap.push((h0, 0, start))
-  let mut nodes : Int = 1
+  let mut nodes = 1
 
   while !heap.is_empty() {
     match heap.pop() {
       Some((_h, _g, node)) => {
         if node == goal {
-          return @graph.PathResult::{ path: rebuild_path(parent, goal), cost: rebuild_path(parent, goal).length() - 1, nodes_visited: nodes }
+          return @graph.PathResult::{
+            path: rebuild_path(parent, goal),
+            cost: cost[goal],
+            nodes_visited: nodes,
+          }
         }
-        let nbs = @graph.Graph::neighbors(graph, node)
-        for i = 0; i < nbs.length(); i = i + 1 {
-          let (nb, _) = nbs[i]
+        for edge in @graph.Graph::neighbors(graph, node) {
+          let (nb, edge_cost) = edge
           if !visited[nb] {
             visited[nb] = true
             parent[nb] = node
+            cost[nb] = cost[node] + edge_cost
             nodes = nodes + 1
             let h_val = @graph.Graph::heuristic(graph, nb, goal)
-            heap.push((h_val, 0, nb))
+            heap.push((h_val, cost[nb], nb))
           }
         }
       }

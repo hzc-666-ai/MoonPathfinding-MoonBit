@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "hzc-666-ai/moonpathfinding/bench"
+
+import {
+  "hzc-666-ai/moonpathfinding/graph",
+}
+
+// Values
+pub fn compare_all(@graph.Grid, Int, Int) -> Array[BenchResult]
+
+pub fn maze_benchmark() -> String
+
+pub fn optimality_check(Array[BenchResult]) -> String
+
+pub fn random_benchmark(Int, Int) -> String
+
+// Errors
+
+// Types and methods
+pub(all) struct BenchResult {
+  name : String
+  path_len : Int
+  cost : Int
+  visited : Int
+  found : Bool
+}
+
+// Type aliases
+
+// Traits
+

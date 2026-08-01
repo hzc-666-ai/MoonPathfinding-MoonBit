@@ -1,5 +1,5 @@
+///|
 /// Blackbox tests for moonpathfinding public API.
-
 test "full pipeline graph" {
   let g = @graph.AdjacencyList::new(4)
   g.add_edge_undirected(0, 1, 1)
@@ -10,6 +10,7 @@ test "full pipeline graph" {
   assert_eq(r.path.length(), 4)
 }
 
+///|
 test "full pipeline grid" {
   match @graph.Grid::from_strings(["S..", ".#.", "..E"]) {
     Some(grid) => {
@@ -26,6 +27,7 @@ test "full pipeline grid" {
 
 // --- WeightedGrid integration ---
 
+///|
 test "weighted grid diag neighbors" {
   let cells = Array::make(9, true)
   let costs = Array::make(9, 1)
@@ -34,6 +36,7 @@ test "weighted grid diag neighbors" {
   assert_true(r.path.length() > 0)
 }
 
+///|
 test "weighted grid pathfinding" {
   let cells = [true, true, true]
   let costs = [1, 10, 1]
@@ -45,6 +48,7 @@ test "weighted grid pathfinding" {
 
 // --- HexGrid integration ---
 
+///|
 test "hex grid pathfinding" {
   let cells = Array::make(25, true)
   let g = @graph.HexGrid::new(5, 5, cells)
@@ -54,6 +58,7 @@ test "hex grid pathfinding" {
 
 // --- Maze integration ---
 
+///|
 test "dfs maze is solvable" {
   let lines = @maze.dfs_maze(8, 8, 123)
   match @graph.Grid::from_strings(lines) {
@@ -71,6 +76,7 @@ test "dfs maze is solvable" {
 
 // --- JPS integration ---
 
+///|
 test "jps finds path in open grid" {
   let cells = Array::make(100, true)
   let g = @graph.Grid::new(10, 10, cells)
@@ -78,6 +84,7 @@ test "jps finds path in open grid" {
   assert_true(r.path.length() > 0)
 }
 
+///|
 test "jps finds path with walls" {
   let lines = ["S..", ".#.", "..E"]
   match @graph.Grid::from_strings(lines) {
@@ -93,6 +100,7 @@ test "jps finds path with walls" {
 
 // --- IDA* integration ---
 
+///|
 test "idastar finds path in open grid" {
   let cells = Array::make(100, true)
   let g = @graph.Grid::new(10, 10, cells)
@@ -100,6 +108,7 @@ test "idastar finds path in open grid" {
   assert_true(r.path.length() > 0)
 }
 
+///|
 test "idastar finds path with walls" {
   let lines = ["S..", ".#.", "..E"]
   match @graph.Grid::from_strings(lines) {
@@ -115,6 +124,7 @@ test "idastar finds path with walls" {
 
 // --- Benchmark integration ---
 
+///|
 test "benchmark compare all runs" {
   let cells = Array::make(100, true)
   let g = @graph.Grid::new(10, 10, cells)
@@ -122,8 +132,8 @@ test "benchmark compare all runs" {
   assert_eq(results.length(), 9)
 }
 
+///|
 test "benchmark maze runs" {
   let report = @bench.maze_benchmark()
   assert_true(report.length() > 0)
 }
-
