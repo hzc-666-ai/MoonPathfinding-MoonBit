@@ -1,0 +1,14 @@
+name: moonpathfinding
+version: 0.1.3
+description: A pure MoonBit pathfinding library with 9 algorithms, graph and grid support, path smoothing, and visualization
+repository: https://github.com/hzc-666-ai/MoonPathfinding-MoonBit
+license: MIT
+keywords:
+  - pathfinding
+  - bfs
+  - dfs
+  - dijkstra
+  - astar
+  - graph
+  - algorithm
+  - visualization
